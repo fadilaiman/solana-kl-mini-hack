@@ -1,0 +1,25 @@
+# ─── Production build override ──────────────────────────────────────────────
+# The base docker-compose.yml runs the app in DEV mode (hot reload, live mount).
+# This override switches the app to the OPTIMIZED PRODUCTION build for demos/launch.
+#
+# Switch to production:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate app
+#   (first boot runs `next build` — ~3–5 min; watch: docker compose logs -f app)
+#
+# Switch back to dev:
+#   docker compose up -d --force-recreate app
+#
+# Note: `next start` serves a frozen build — code changes require re-running the
+# command above (rebuild). Dev mode is the one that hot-reloads.
+
+services:
+  app:
+    environment:
+      - NODE_ENV=production
+    command: >
+      sh -c "apk add --no-cache openssl libc6-compat tzdata >/dev/null &&
+             npm ci --include=dev &&
+             npx prisma generate &&
+             npx prisma db push --skip-generate &&
+             npm run build &&
+             npm run start"
