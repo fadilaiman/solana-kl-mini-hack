@@ -1,0 +1,392 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SoleMandate | Automate your revenue on Solana</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "glass-fill": "rgba(30, 41, 59, 0.7)",
+                        "inverse-surface": "#dae2fd",
+                        "inverse-on-surface": "#283044",
+                        "surface-dim": "#0b1326",
+                        "outline-variant": "#4a4455",
+                        "surface": "#0b1326",
+                        "on-tertiary-fixed": "#002109",
+                        "tertiary": "#4ae176",
+                        "surface-container-lowest": "#060e20",
+                        "tertiary-container": "#00672c",
+                        "error": "#EF4444",
+                        "surface-container-high": "#222a3d",
+                        "tertiary-fixed": "#6bff8f",
+                        "on-secondary-fixed-variant": "#5c4300",
+                        "on-tertiary-container": "#55eb7e",
+                        "primary-fixed": "#ebddff",
+                        "surface-container-low": "#131b2e",
+                        "on-surface-variant": "#ccc3d7",
+                        "secondary": "#ffc640",
+                        "surface-bright": "#31394d",
+                        "on-background": "#dae2fd",
+                        "primary-fixed-dim": "#d3bbff",
+                        "surface-tint": "#d3bbff",
+                        "primary": "#d3bbff",
+                        "tertiary-fixed-dim": "#4ae176",
+                        "surface-container": "#171f33",
+                        "on-secondary-fixed": "#261a00",
+                        "surface-variant": "#2d3449",
+                        "secondary-fixed-dim": "#f9bd22",
+                        "on-error": "#690005",
+                        "on-tertiary": "#003915",
+                        "surface-alt": "#111827",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary": "#3f008d",
+                        "on-tertiary-fixed-variant": "#005321",
+                        "secondary-container": "#e3aa00",
+                        "on-primary-fixed-variant": "#5b00c5",
+                        "inverse-primary": "#7331df",
+                        "on-surface": "#dae2fd",
+                        "on-primary-container": "#dac5ff",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#6d28d9",
+                        "surface-card": "#1E293B",
+                        "on-primary-fixed": "#250059",
+                        "on-secondary-container": "#5a4100",
+                        "background": "#0b1326",
+                        "border-subtle": "rgba(255, 255, 255, 0.1)",
+                        "outline": "#958da1",
+                        "on-secondary": "#402d00",
+                        "secondary-fixed": "#ffdf9f",
+                        "error-container": "#93000a"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Space Grotesk"],
+                        "display-lg": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(109, 40, 217, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #d3bbff, #ffc640);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-primary-gradient {
+            background: linear-gradient(to bottom right, #6d28d9, #4c1d95);
+            transition: all 0.3s ease;
+        }
+        .btn-primary-gradient:hover {
+            box-shadow: 0 0 20px rgba(109, 40, 217, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-secondary-outline {
+            border: 1px solid #ffc640;
+            color: #ffc640;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary-outline:hover {
+            background: rgba(255, 198, 64, 0.1);
+        }
+        .mandate-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+<body class="selection:bg-primary/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-glass-fill backdrop-blur-md border-b border-white/10 h-20">
+<div class="flex justify-between items-center px-margin-desktop w-full max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-stack-md">
+<img alt="SoleMandate Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmu4wUGMaeCE8fd0zn1esV51rvZ9klW8uSKFOcTE7Vv91eJGg6CXl4GehoRL33lihjlcg6huxn5Kf5geydg-CJMVLW2YG-t08G0dcwyjKnw5iUeFPVWKA-aSC1EH73zTGhM25idOvZL1qMwr6uc8MP4Zf1o7ktb7GMfFda9Jxg_fp8Hoa_zvlI67Y9zEJiwZWllEr9HKn8JN28KXDBHLhJ9jV_74DiZgfTA8lagvyqfaMyidNHL3AzWKyhdC21T9a3A-IZ2dE3WA">
+<span class="font-headline-md text-headline-md font-bold flex items-center"><span style="color: #6d28d9;" class="">Sol</span><span style="background: linear-gradient(to right, #6d28d9 70%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; -webkit-text-stroke: 1px #fbbf24;" class="">e</span><span style="color: #fbbf24;" class="">Mandate</span></span>
+</div>
+<div class="hidden md:flex items-center gap-stack-lg font-body-md text-body-md">
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors" href="#">Create Mandate</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors" href="#">Activity</a>
+</div>
+<button class="btn-primary-gradient px-6 py-2.5 rounded-lg font-label-sm text-label-sm text-white active:scale-95 transition-transform">
+                Connect Wallet
+            </button>
+</div>
+</nav>
+<main class="pt-32 pb-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto space-y-16">
+<!-- Hero Section -->
+<section class="relative">
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="text-center space-y-stack-md max-w-3xl mx-auto mb-16">
+<h1 class="font-display-lg text-display-lg md:text-display-lg text-gradient">
+                    Automate your revenue on Solana.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                    Non-custodial recurring payments and subscription mandates for the Solana ecosystem. Secure, transparent, and fully automated.
+                </p>
+</div>
+<!-- Stats Bar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-4xl mx-auto mb-16">
+<div class="glass-card p-stack-lg rounded-xl flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-widest mb-2">Total Value Locked</span>
+<span class="font-headline-lg text-headline-lg text-secondary">$12,482,904.50</span>
+</div>
+<div class="glass-card p-stack-lg rounded-xl flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-widest mb-2">Active Mandates</span>
+<span class="font-headline-lg text-headline-lg text-primary">8,241</span>
+</div>
+</div>
+</section>
+<!-- Main Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Quick Create Card (Left) -->
+<section class="lg:col-span-5">
+<div class="glass-card p-gutter rounded-xl h-full">
+<div class="flex items-center gap-2 mb-stack-lg">
+<span class="material-symbols-outlined text-primary" data-icon="add_circle">add_circle</span>
+<h2 class="font-headline-md text-headline-md">Quick Create</h2>
+</div>
+<form class="space-y-stack-md">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Recipient Wallet</label>
+<input class="w-full bg-surface-dim border border-white/10 rounded-lg px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all" placeholder="Solana Address" type="text">
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Amount</label>
+<input class="w-full bg-surface-dim border border-white/10 rounded-lg px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="0.00" type="number">
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Asset</label>
+<select class="w-full bg-surface-dim border border-white/10 rounded-lg px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+<option>USDC</option>
+<option>SOL</option>
+<option>PYTH</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Frequency</label>
+<select class="w-full bg-surface-dim border border-white/10 rounded-lg px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+<option>Weekly</option>
+<option>Monthly</option>
+<option>Annually</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Duration (Cycles)</label>
+<input class="w-full bg-surface-dim border border-white/10 rounded-lg px-4 py-3 text-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="12" type="number">
+</div>
+</div>
+<button class="w-full btn-primary-gradient py-4 rounded-lg font-headline-md text-headline-md text-white mt-4" type="submit">
+                            Deploy Mandate
+                        </button>
+</form>
+</div>
+</section>
+<!-- Recent Mandates (Right) -->
+<section class="lg:col-span-7">
+<div class="glass-card rounded-xl h-full overflow-hidden flex flex-col">
+<div class="p-gutter border-b border-white/5 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="history">history</span>
+<h2 class="font-headline-md text-headline-md">Recent Mandates</h2>
+</div>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto flex-grow">
+<table class="w-full text-left">
+<thead class="bg-white/5">
+<tr>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">Mandate ID</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">Amount</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">Status</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-outline uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="mandate-row transition-colors">
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<span class="font-mono-data text-on-surface">MND-7x2...9fL</span>
+<span class="font-label-sm text-[12px] text-outline">Created 2h ago</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<span class="font-mono-data text-on-surface">500 USDC / Mo</span>
+</td>
+<td class="px-gutter py-5">
+<span class="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-tight">Active</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors flex items-center gap-1 ml-auto" onclick="showToast('Link copied!')">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+<span class="font-label-sm text-label-sm">Link</span>
+</button>
+</td>
+</tr>
+<tr class="mandate-row transition-colors">
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<span class="font-mono-data text-on-surface">MND-3p4...1vB</span>
+<span class="font-label-sm text-[12px] text-outline">Created 1d ago</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<span class="font-mono-data text-on-surface">2.5 SOL / Wk</span>
+</td>
+<td class="px-gutter py-5">
+<span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-tight">Pending</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+<span class="font-label-sm text-label-sm">Link</span>
+</button>
+</td>
+</tr>
+<tr class="mandate-row transition-colors">
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<span class="font-mono-data text-on-surface">MND-9q1...5mR</span>
+<span class="font-label-sm text-[12px] text-outline">Created 3d ago</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<span class="font-mono-data text-on-surface">1,200 USDC / Mo</span>
+</td>
+<td class="px-gutter py-5">
+<span class="bg-tertiary/10 text-tertiary px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-tight">Active</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+<span class="font-label-sm text-label-sm">Link</span>
+</button>
+</td>
+</tr>
+<tr class="mandate-row transition-colors">
+<td class="px-gutter py-5">
+<div class="flex flex-col">
+<span class="font-mono-data text-on-surface">MND-2z4...0kE</span>
+<span class="font-label-sm text-[12px] text-outline">Created 1w ago</span>
+</div>
+</td>
+<td class="px-gutter py-5">
+<span class="font-mono-data text-on-surface">50 USDC / Mo</span>
+</td>
+<td class="px-gutter py-5">
+<span class="bg-white/10 text-outline px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-tight">Expired</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="text-outline hover:text-primary transition-colors flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+<span class="font-label-sm text-label-sm">Link</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 py-stack-lg mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-stack-lg w-full max-w-container-max mx-auto gap-stack-md">
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="flex items-center gap-2">
+<img alt="SoleMandate Logo" class="h-6 w-auto opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmu4wUGMaeCE8fd0zn1esV51rvZ9klW8uSKFOcTE7Vv91eJGg6CXl4GehoRL33lihjlcg6huxn5Kf5geydg-CJMVLW2YG-t08G0dcwyjKnw5iUeFPVWKA-aSC1EH73zTGhM25idOvZL1qMwr6uc8MP4Zf1o7ktb7GMfFda9Jxg_fp8Hoa_zvlI67Y9zEJiwZWllEr9HKn8JN28KXDBHLhJ9jV_74DiZgfTA8lagvyqfaMyidNHL3AzWKyhdC21T9a3A-IZ2dE3WA">
+<span class="font-headline-md text-headline-md font-bold flex items-center"><span style="color: #6d28d9;" class="">Sol</span><span style="background: linear-gradient(to right, #6d28d9 70%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; -webkit-text-stroke: 1px #fbbf24;" class="">e</span><span style="color: #fbbf24;" class="">Mandate</span></span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary">© 2024 SoleMandate. Powered by Solana.</p>
+</div>
+<div class="flex items-center gap-stack-lg font-label-sm text-label-sm">
+<a class="text-outline hover:text-on-surface transition-colors hover:underline" href="#">Terms</a>
+<a class="text-outline hover:text-on-surface transition-colors hover:underline" href="#">Privacy</a>
+<a class="text-outline hover:text-on-surface transition-colors hover:underline" href="#">Docs</a>
+<a class="text-outline hover:text-on-surface transition-colors hover:underline" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Simple Toast System -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 glass-card px-6 py-3 rounded-full flex items-center gap-2 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-[100]" id="toast">
+<span class="material-symbols-outlined text-tertiary" data-icon="check_circle">check_circle</span>
+<span class="font-label-sm text-label-sm" id="toast-text">Action successful</span>
+</div>
+<script>
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toastText.innerText = message;
+            
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+
+        // Add micro-interactions to buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+    </script>
+
+
+</body></html>
