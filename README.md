@@ -4,8 +4,8 @@ On-chain automated **direct debit** for subscriptions on Solana. A merchant defi
 recurring terms; a payer connects a wallet once and signs a single SPL-token `approve`;
 the platform then pulls a fixed amount each cycle via `transferChecked`, **absorbing the gas**.
 
-Token-agnostic (any SPL mint), Solana **devnet**, 100% Docker. See `CLAUDE.md` for the
-infra rules (ports `14020–14029`, MYT timezone, bind mounts under `/data/solemandate`).
+Token-agnostic (any SPL mint), Solana **devnet**, 100% Docker — ports `14020–14029`,
+MYT timezone, bind mounts under `/data/solemandate`.
 
 ## Architecture
 

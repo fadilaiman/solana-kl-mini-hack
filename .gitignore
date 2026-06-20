@@ -41,3 +41,8 @@ temp/
 # Git credential store (token) — never commit
 .git-credentials
 .gitconfig
+
+# Internal ops docs & config screenshots — keep local, never publish
+CLAUDE.md
+PROJECT_INFRA_TEMPLATE.md
+mandate_config.jpg
