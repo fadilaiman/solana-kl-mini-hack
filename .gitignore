@@ -37,3 +37,7 @@ temp/
 # ─── OS / editor ─────────────────────────────────────────────
 .DS_Store
 *.swp
+
+# Git credential store (token) — never commit
+.git-credentials
+.gitconfig
