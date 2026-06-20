@@ -27,12 +27,34 @@ A fresh copy boots with three commands — no host installs, everything runs in 
 cd /data/solemandate
 cp .env.example .env                 # then fill in the REPLACE_ME secrets (see below)
 docker compose up -d
-docker compose logs -f app           # first boot installs deps + runs migrations (~2–3 min)
+docker compose logs -f app           # first boot installs deps + syncs schema
 ```
 
 The `app` container installs npm deps, runs `prisma generate` + `prisma db push`, then starts
 Next.js on first boot — so a clean clone needs no manual `npm install` or migration step. Once
 up, the app is on <http://localhost:14020>.
+
+### Dev vs production build
+
+Two run modes, both fully in Docker and both on the **same** `.env` (so the Solana network is
+unchanged — build mode only affects page-load speed, not the blockchain):
+
+- **Dev (default)** — `docker compose up -d`. Runs `next dev` with the source live-mounted, so
+  code edits hot-reload instantly. Deps install only on first boot (cached in a volume), so
+  restarts are fast (~5 s). Best while building.
+- **Production** — `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate app`.
+  Runs the optimized `next build` + `next start` for fast page loads (demos/launch). First boot
+  runs the build (~3–5 min); code changes then need this command re-run (no hot reload).
+
+Switch back to dev with `docker compose up -d --force-recreate app`.
+
+### RPC endpoint
+
+`SOLANA_RPC_URL` (server) and `NEXT_PUBLIC_SOLANA_RPC_URL` (browser) default to the public
+`api.devnet.solana.com`, which rate-limits (HTTP `429`) under real use and can break checkout
+signing. For reliable demos, set both to a dedicated **devnet** endpoint in `.env` — e.g. Helius
+`https://devnet.helius-rpc.com/?api-key=YOUR_KEY`. `NEXT_PUBLIC_*` is baked at build time, so
+changing it requires an app rebuild (`--force-recreate app`).
 
 ### Secrets to fill in `.env`
 
@@ -64,6 +86,7 @@ The system fee-payer pays all gas + merchant ATA rent, so it must hold devnet SO
 
 - Fee-payer pubkey: see `NEXT_PUBLIC_SYSTEM_FEEPAYER_PUBKEY` in `.env`
 - Fund it at <https://faucet.solana.com> (devnet) — the public RPC blocks programmatic airdrops.
+  (See **RPC endpoint** above — a dedicated devnet RPC avoids the public node's `429` throttling.)
 
 The payer's wallet must hold the chosen SPL token (its ATA must exist before `approve`).
 
@@ -76,7 +99,8 @@ N/N → COMPLETED) runs with **no funds required**. Set back to `false` for real
 ## Demo flow (≈2 min)
 
 1. Dashboard (`/`): create a mandate (e.g. total `1200`, `12` cycles → 100/cycle) → copy checkout link.
-2. Checkout (`/checkout/:id`): connect devnet wallet, sign the approve → status `ACTIVE`, ledger `0/12`.
+2. Checkout (`/checkout/:id`): connect your wallet (**set Phantom to Devnet** + hold the SPL token
+   with SOL for the approve fee), sign the approve → status `ACTIVE`, ledger `0/12`.
 3. Trigger collection: wait for the cron, or
    `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:14020/api/v1/cron/debit-sweep`
    → ledger `1/12`, real tx on the Solana explorer, payer wallet untouched by gas.
