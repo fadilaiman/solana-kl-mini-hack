@@ -1,0 +1,102 @@
+name: solemandate
+
+services:
+
+  # ─── Application (Next.js, live-mounted) ─────────────────────
+  app:
+    image: node:20-alpine
+    container_name: solemandate-app
+    restart: unless-stopped
+    working_dir: /app
+    env_file: .env
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+    # First boot installs deps, runs migrations, then starts Next dev (hot reload via live mount)
+    command: >
+      sh -c "apk add --no-cache openssl libc6-compat tzdata >/dev/null &&
+             npm install &&
+             npx prisma generate &&
+             npx prisma db push --skip-generate --accept-data-loss &&
+             npm run dev"
+    ports:
+      - "14020:3000"
+    volumes:
+      - ./app:/app                       # live mount — source edits hot-reload
+      - solemandate-node-modules:/app/node_modules   # keep deps off the host bind
+      - ./logs/app:/app/logs
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - solemandate-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── Database (PostgreSQL) ───────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: solemandate-db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+    ports:
+      - "14021:5432"
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./logs/db:/var/log/postgresql
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - solemandate-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── Nginx (internal reverse proxy, HTTP only) ───────────────
+  nginx:
+    image: nginx:alpine
+    container_name: solemandate-nginx
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+    ports:
+      - "14022:80"                        # rproxy terminates TLS and proxies here
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./logs/nginx:/var/log/nginx
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - solemandate-net
+    depends_on:
+      - app
+
+  # ─── Cron sidecar (triggers the debit sweep) ─────────────────
+  cron:
+    image: alpine:3.20
+    container_name: solemandate-cron
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+    # install curl, inject the secret into the crontab, run crond in foreground
+    command: >
+      sh -c "apk add --no-cache curl tzdata >/dev/null &&
+             sed \"s|__CRON_SECRET__|$CRON_SECRET|g\" /etc/crontab.src > /etc/crontabs/root &&
+             crond -f -l 8"
+    volumes:
+      - ./cron/crontab:/etc/crontab.src:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - solemandate-net
+    depends_on:
+      - app
+
+networks:
+  solemandate-net:
+    driver: bridge
+    name: solemandate-net
+
+volumes:
+  solemandate-node-modules:
+    name: solemandate-node-modules

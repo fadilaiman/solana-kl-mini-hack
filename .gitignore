@@ -1,0 +1,39 @@
+# ─── Secrets — never commit ──────────────────────────────────
+.env
+*.pem
+*.key
+
+# ─── Runtime data & logs (bind mounts) ───────────────────────
+/data/db/
+/data/
+/logs/
+app/logs/
+
+# ─── Node / Next build artifacts ─────────────────────────────
+app/node_modules/
+app/.next/
+app/node_modules/.prisma/
+app/next-env.d.ts
+app/tsconfig.tsbuildinfo
+npm-debug.log*
+
+# ─── DB dumps / transient working files ──────────────────────
+backups/
+temp/
+*.sql
+
+# ─── Home-directory noise (repo root == home dir) ────────────
+.Xauthority
+.bash_history
+.cache/
+.config/
+.local/
+.npm/
+.ssh/
+.claude/
+.claude.json
+.claude.json.backup
+
+# ─── OS / editor ─────────────────────────────────────────────
+.DS_Store
+*.swp

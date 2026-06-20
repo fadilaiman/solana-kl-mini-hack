@@ -1,0 +1,73 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  mandates  Mandate[]
+  createdAt DateTime  @default(now())
+}
+
+model Mandate {
+  id            String     @id @default(uuid())
+
+  // Parties (base58 wallet pubkeys). ATAs are derived in code, not stored.
+  payer         String?    // payer's wallet pubkey (set once authorized)
+  merchant      String     // merchant's receiving wallet pubkey
+
+  // Token (any SPL mint — not hardcoded to USDC)
+  mint          String     // SPL token mint address
+  decimals      Int        @default(0)
+  tokenSymbol   String?    // display label, e.g. "USDC"
+
+  // Value denomination — bill in a currency (RM) at a fixed peg to the token.
+  currency      String     @default("RM")
+  rmPerToken    Float      @default(1) // value of 1 whole token in `currency`
+
+  // Amounts in base units (token's smallest unit)
+  maxAmount     BigInt     // total allowance approved on-chain
+  debitAmount   BigInt     // fixed amount pulled each cycle
+
+  // Schedule
+  frequency     String     @default("testing_10m") // testing_10m | monthly
+  totalCycles   Int        // e.g. 12
+  lastDebitedAt DateTime?
+  nextDebitAt   DateTime   @default(now())
+
+  // Authorization tx (the payer's one-time approve) and on-chain revoke (cancel)
+  approveTx     String?
+  revokeTx      String?
+  canceledBy    String?    // "customer" | "operator"
+
+  status        String     @default("PENDING_AUTH") // PENDING_AUTH | ACTIVE | EXHAUSTED | REVOKED | COMPLETED
+
+  debitLogs     DebitLog[]
+
+  user          User?      @relation(fields: [userId], references: [id])
+  userId        String?
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([status, nextDebitAt])
+}
+
+model DebitLog {
+  id            String   @id @default(uuid())
+  mandateId     String
+  mandate       Mandate  @relation(fields: [mandateId], references: [id], onDelete: Cascade)
+  txSignature   String   @unique
+  amountDebited BigInt
+  status        String   // SUCCESS | FAILED
+  errorMessage  String?
+  executedAt    DateTime @default(now())
+
+  @@index([mandateId])
+}

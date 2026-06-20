@@ -1,0 +1,7 @@
+# Solemandate debit-sweep trigger (busybox crond format).
+# Runs every minute; the sweep endpoint itself only debits mandates whose
+# nextDebitAt has elapsed, so the actual cadence (testing 10m / prod monthly)
+# is controlled by DEBIT_ENVIRONMENT in the app, not here.
+# __CRON_SECRET__ is replaced at container start from the CRON_SECRET env var.
+
+* * * * * curl -fsS -m 50 -H "Authorization: Bearer __CRON_SECRET__" http://app:3000/api/v1/cron/debit-sweep >> /var/log/cron-sweep.log 2>&1
