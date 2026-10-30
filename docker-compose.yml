@@ -7,6 +7,11 @@ services:
     image: node:20-alpine
     container_name: solemandate-app
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
     working_dir: /app
     env_file: .env
     environment:
@@ -39,6 +44,11 @@ services:
     image: postgres:16-alpine
     container_name: solemandate-db
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
     env_file: .env
     environment:
       - TZ=Asia/Kuala_Lumpur
@@ -61,6 +71,11 @@ services:
     image: nginx:alpine
     container_name: solemandate-nginx
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
     environment:
       - TZ=Asia/Kuala_Lumpur
     ports:
@@ -79,6 +94,11 @@ services:
     image: alpine:3.20
     container_name: solemandate-cron
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
     env_file: .env
     environment:
       - TZ=Asia/Kuala_Lumpur

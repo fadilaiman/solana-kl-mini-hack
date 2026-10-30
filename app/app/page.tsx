@@ -39,7 +39,7 @@ export default function Home() {
     merchant: '', mint: DEFAULT_TOKEN.mint, tokenSymbol: DEFAULT_TOKEN.symbol,
     configMethod: 'per_payment' as 'per_payment' | 'total',
     perPayment: '', total: '',
-    frequency: 'daily' as Frequency, numberOfPayments: '12',
+    frequency: 'testing_10m' as Frequency, numberOfPayments: '12',
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [lookup, setLookup] = useState('');

@@ -23,7 +23,7 @@ const CADENCE: Record<string, string> = {
 
 export default function CheckoutClient({ mandateId }: { mandateId: string }) {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
+  const { publicKey, sendTransaction, signTransaction, connected } = useWallet();
 
   const [mandate, setMandate] = useState<Mandate | null>(null);
   const [config, setConfig] = useState<Config | null>(null);
@@ -42,6 +42,28 @@ export default function CheckoutClient({ mandateId }: { mandateId: string }) {
   }, [mandateId]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Sign in the wallet, then broadcast over OUR devnet RPC — so the tx lands on the
+  // network the app targets, independent of the wallet's selected network or its
+  // preflight RPC (Phantom's sign-and-send returns an opaque "Unexpected error" when
+  // its own send/preflight fails). Falls back to wallet send if it can't sign-only.
+  const signAndBroadcast = async (tx: Transaction): Promise<string> => {
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+    tx.feePayer = publicKey!;
+    tx.recentBlockhash = blockhash;
+    let sig: string;
+    if (signTransaction) {
+      const signed = await signTransaction(tx);
+      sig = await connection.sendRawTransaction(signed.serialize(), { preflightCommitment: 'confirmed' });
+    } else {
+      sig = await sendTransaction(tx, connection);
+    }
+    // Don't hard-fail on slow confirmation — the backend re-checks on-chain.
+    try {
+      await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed');
+    } catch { /* slow devnet; backend verification catches up */ }
+    return sig;
+  };
 
   const authorize = async () => {
     if (!mandate || !config || !publicKey) return;
@@ -72,15 +94,7 @@ export default function CheckoutClient({ mandateId }: { mandateId: string }) {
         const tx = new Transaction()
           .add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 200_000 }))
           .add(ix);
-        const sig = await sendTransaction(tx, connection);
-        approveTx = sig;
-        // Don't hard-fail if confirmation is slow — the backend re-checks the
-        // delegate on-chain, so a late-landing tx still activates the mandate.
-        try {
-          await connection.confirmTransaction(sig, 'confirmed');
-        } catch {
-          /* confirmation timed out; backend verification will catch up */
-        }
+        approveTx = await signAndBroadcast(tx);
       }
 
       // Tell the backend to verify & activate the mandate.
@@ -115,9 +129,7 @@ export default function CheckoutClient({ mandateId }: { mandateId: string }) {
         const tx = new Transaction()
           .add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 200_000 }))
           .add(createRevokeInstruction(ata, publicKey)); // owner revokes their own delegate
-        const sig = await sendTransaction(tx, connection);
-        revokeTx = sig;
-        try { await connection.confirmTransaction(sig, 'confirmed'); } catch { /* slow devnet */ }
+        revokeTx = await signAndBroadcast(tx);
       }
       const res = await fetch(`/api/v1/mandates/${mandateId}/cancel`, {
         method: 'POST',
